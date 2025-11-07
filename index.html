@@ -87,7 +87,7 @@
           <div id="kpi2025" class="nowrap" style="font-size:20px; font-weight:700;">0</div>
           <span id="projBadge" class="badge">projection off</span>
         </div>
-        <p class="small">data through Oct 15, 2025</p>
+        <p class="small">data through Oct 31, 2025</p>
       </div>
     </div>
 
@@ -106,9 +106,9 @@
           <option value="none">none (YTD only)</option>
           <option value="avg">3 year average 2022-2024 (non-zero years)</option>
           <option value="best">best of 2022-2024</option>
-          <option value="auto">auto scale YTD to full year (365/288)</option>
+          <option value="auto">auto scale YTD to full year (365/304)</option>
         </select>
-        <div class="small">auto assumes cutoff Oct 15, 2025</div>
+        <div class="small">auto assumes cutoff Oct 31, 2025</div>
       </div>
     </div>
 
@@ -150,28 +150,28 @@
 
   <script>
     const raw = [
-      { DebtorName:"S.I.N. Schroef Injectie Nederland B.V.", Tonnage_2022:1188, Tonnage_2023:871, Tonnage_2024:1193, Tonnage_2025:787, TotalTonnage_AllYears:4037 },
-      { DebtorName:"De Waalpaal B.V.", Tonnage_2022:634, Tonnage_2023:398, Tonnage_2024:949, Tonnage_2025:610, TotalTonnage_AllYears:2589 },
-      { DebtorName:"Ras Heiwerken B.V.", Tonnage_2022:103, Tonnage_2023:483, Tonnage_2024:771, Tonnage_2025:487, TotalTonnage_AllYears:1843 },
+      { DebtorName:"S.I.N. Schroef Injectie Nederland B.V.", Tonnage_2022:1188, Tonnage_2023:871, Tonnage_2024:1193, Tonnage_2025:795, TotalTonnage_AllYears:4046 },
+      { DebtorName:"De Waalpaal B.V.", Tonnage_2022:634, Tonnage_2023:398, Tonnage_2024:949, Tonnage_2025:645, TotalTonnage_AllYears:2624 },
+      { DebtorName:"Ras Heiwerken B.V.", Tonnage_2022:103, Tonnage_2023:483, Tonnage_2024:771, Tonnage_2025:574, TotalTonnage_AllYears:1930 },
       { DebtorName:"Veldstaal Steel Trade b.v.", Tonnage_2022:499, Tonnage_2023:473, Tonnage_2024:242, Tonnage_2025:106, TotalTonnage_AllYears:1320 },
-      { DebtorName:"Verhoef Funderingstechnieken BV", Tonnage_2022:184, Tonnage_2023:185, Tonnage_2024:102, Tonnage_2025:83, TotalTonnage_AllYears:552 },
+      { DebtorName:"Verhoef Funderingstechnieken BV", Tonnage_2022:184, Tonnage_2023:185, Tonnage_2024:102, Tonnage_2025:84, TotalTonnage_AllYears:553 },
       { DebtorName:"De Waal Solid Foundations NV.", Tonnage_2022:0, Tonnage_2023:36, Tonnage_2024:313, Tonnage_2025:51, TotalTonnage_AllYears:399 },
+      { DebtorName:"Heicombinatie SPS B.V.", Tonnage_2022:0, Tonnage_2023:63, Tonnage_2024:90, Tonnage_2025:178, TotalTonnage_AllYears:329 },
       { DebtorName:"Arie de Winter en Zonen B.V.", Tonnage_2022:0, Tonnage_2023:33, Tonnage_2024:245, Tonnage_2025:44, TotalTonnage_AllYears:320 },
-      { DebtorName:"Heicombinatie SPS B.V.", Tonnage_2022:0, Tonnage_2023:63, Tonnage_2024:90, Tonnage_2025:87, TotalTonnage_AllYears:239 },
       { DebtorName:"BHP Funderingstechnieken B.V.", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:212, Tonnage_2025:18, TotalTonnage_AllYears:229 },
       { DebtorName:"Verhoef Verhuur B.V.", Tonnage_2022:52, Tonnage_2023:36, Tonnage_2024:74, Tonnage_2025:20, TotalTonnage_AllYears:180 },
       { DebtorName:"P. van't Wout Vijzel- en Funderingstechnieken B.V.", Tonnage_2022:58, Tonnage_2023:115, Tonnage_2024:0, Tonnage_2025:0, TotalTonnage_AllYears:172 },
-      { DebtorName:"Funderingsherstel.nl B.V.", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:42, Tonnage_2025:102, TotalTonnage_AllYears:143 },
+      { DebtorName:"Funderingsherstel.nl B.V.", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:42, Tonnage_2025:112, TotalTonnage_AllYears:153 },
       { DebtorName:"P. van 't Wout Funderingstechnieken B.V.", Tonnage_2022:0, Tonnage_2023:78, Tonnage_2024:33, Tonnage_2025:0, TotalTonnage_AllYears:111 },
       { DebtorName:"Zaanstad Funderingen B.V.", Tonnage_2022:0, Tonnage_2023:53, Tonnage_2024:53, Tonnage_2025:0, TotalTonnage_AllYears:106 },
       { DebtorName:"Funderingstechniek Noord Materieel B.V.", Tonnage_2022:44, Tonnage_2023:18, Tonnage_2024:33, Tonnage_2025:0, TotalTonnage_AllYears:94 },
       { DebtorName:"Brefu Funderingstechnieken  B.V.", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:0, Tonnage_2025:70, TotalTonnage_AllYears:70 },
+      { DebtorName:"Hoolwerf Heiwerken B.V.", Tonnage_2022:0, Tonnage_2023:16, Tonnage_2024:11, Tonnage_2025:37, TotalTonnage_AllYears:63 },
       { DebtorName:"Fundering Expertise Nederland B.V.", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:2, Tonnage_2025:53, TotalTonnage_AllYears:55 },
+      { DebtorName:"Kaaij Funderingstechniek B.V.", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:0, Tonnage_2025:51, TotalTonnage_AllYears:51 },
       { DebtorName:"ZLINER s.r.o.", Tonnage_2022:24, Tonnage_2023:21, Tonnage_2024:0, Tonnage_2025:0, TotalTonnage_AllYears:45 },
-      { DebtorName:"Hoolwerf Heiwerken B.V.", Tonnage_2022:0, Tonnage_2023:16, Tonnage_2024:11, Tonnage_2025:11, TotalTonnage_AllYears:37 },
-      { DebtorName:"Kaaij Funderingstechniek B.V.", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:0, Tonnage_2025:31, TotalTonnage_AllYears:31 },
       { DebtorName:"Walinco Funderingstechniek", Tonnage_2022:19, Tonnage_2023:10, Tonnage_2024:0, Tonnage_2025:0, TotalTonnage_AllYears:28 },
-      { DebtorName:"Steenbergen Steel Products B.V.", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:18, Tonnage_2025:2, TotalTonnage_AllYears:19 },
+      { DebtorName:"Steenbergen Steel Products B.V.", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:18, Tonnage_2025:3, TotalTonnage_AllYears:20 },
       { DebtorName:"VOTQUENNE FOUNDATIONS SA", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:0, Tonnage_2025:18, TotalTonnage_AllYears:18 },
       { DebtorName:'UAB "Kiruna"', Tonnage_2022:13, Tonnage_2023:0, Tonnage_2024:0, Tonnage_2025:0, TotalTonnage_AllYears:13 },
       { DebtorName:"BAM Infra B.V.", Tonnage_2022:0, Tonnage_2023:13, Tonnage_2024:0, Tonnage_2025:0, TotalTonnage_AllYears:13 },
@@ -195,7 +195,8 @@
 
     const fmt = n => n.toLocaleString('en-GB');
 
-    const AUTO_SCALE = 365 / 288;
+    // Updated for Oct 31 cutoff (day 304 of the year)
+    const AUTO_SCALE = 365 / 304;
 
     function projectionFor(row, mode) {
       if (mode === 'none') return row.Tonnage_2025;
