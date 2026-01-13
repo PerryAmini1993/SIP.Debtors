@@ -25,7 +25,7 @@
     }
     .card h3 { margin:0 0 4px 0; font-weight:600; font-size:var(--md); color:#d5dcff; }
     .card p { margin:2px 0; color:var(--muted); font-size:var(--sm); }
-    .controls { display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin:10px 0; }
+    .controls { display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin:10px 0; }
     .control { background:#121623; border:1px solid #202635; border-radius:12px; padding:10px; }
     .control label { display:block; font-size:var(--sm); color:#b7c0d9; margin-bottom:6px; }
     .control input, .control select {
@@ -47,8 +47,6 @@
     tbody td { padding:8px; font-size:var(--sm); color:#e3e7f5; border-top:1px solid #1b2133; }
     tbody tr:hover { background:#131a2e; }
     .note { margin-top:6px; color:#a7b0c8; font-size:var(--sm); }
-    .badge { display:inline-block; padding:2px 8px; border-radius:999px; background:#16233d; border:1px solid #2a3a61; color:#cfe0ff; font-size:11px; }
-    .badge.active { background:#2a3a61; border-color:#6aa6ff; }
     .row { display:flex; gap:10px; align-items:center; justify-content:space-between; }
     .nowrap { white-space:nowrap; }
     @media (max-width: 980px) {
@@ -82,12 +80,9 @@
         <p>sum across all debtors</p>
       </div>
       <div class="card">
-        <h3>2025 YTD and projection</h3>
-        <div class="row">
-          <div id="kpi2025" class="nowrap" style="font-size:20px; font-weight:700;">0</div>
-          <span id="projBadge" class="badge">projection off</span>
-        </div>
-        <p class="small">data through Oct 31, 2025</p>
+        <h3>total tonnage 2025</h3>
+        <div id="kpi2025" class="nowrap" style="font-size:20px; font-weight:700;">0</div>
+        <p class="small">full year 2025</p>
       </div>
     </div>
 
@@ -97,18 +92,8 @@
         <input id="search" type="text" placeholder="type to filter..." />
       </div>
       <div class="control">
-        <label for="topn">show top N by total</label>
+        <label for="topn">show top N by total (2022-2025)</label>
         <input id="topn" type="number" min="3" max="50" value="12" />
-      </div>
-      <div class="control">
-        <label for="projection">2025 projection mode</label>
-        <select id="projection">
-          <option value="none">none (YTD only)</option>
-          <option value="avg">3 year average 2022-2024 (non-zero years)</option>
-          <option value="best">best of 2022-2024</option>
-          <option value="auto">auto scale YTD to full year (365/304)</option>
-        </select>
-        <div class="small">auto assumes cutoff Oct 31, 2025</div>
       </div>
     </div>
 
@@ -116,12 +101,12 @@
       <div class="card">
         <h3>top N debtors by total tonnage</h3>
         <canvas id="barTop"></canvas>
-        <p class="note">bars are stacked by year; 2025 uses projection if enabled</p>
+        <p class="note">bars are stacked by year (2022-2025 actuals)</p>
       </div>
       <div class="card">
         <h3>year totals</h3>
         <canvas id="barYearTotals"></canvas>
-        <p class="note">company-wide annual totals; 2025 uses projection if enabled</p>
+        <p class="note">company-wide annual totals (2022-2025 actuals)</p>
       </div>
     </div>
 
@@ -134,41 +119,38 @@
             <th data-k="Tonnage_2022" role="columnheader" aria-sort="none" tabindex="0">2022</th>
             <th data-k="Tonnage_2023" role="columnheader" aria-sort="none" tabindex="0">2023</th>
             <th data-k="Tonnage_2024" role="columnheader" aria-sort="none" tabindex="0">2024</th>
-            <th data-k="Tonnage_2025" role="columnheader" aria-sort="none" tabindex="0">2025 YTD</th>
-            <th data-k="Projected_2025" role="columnheader" aria-sort="none" tabindex="0">2025 projected</th>
-            <th data-k="Total_YTD" role="columnheader" aria-sort="none" tabindex="0">total 22-25 (YTD)</th>
-            <th data-k="Total_WithProjection" role="columnheader" aria-sort="descending" tabindex="0">total 22-25 (proj)</th>
+            <th data-k="Tonnage_2025" role="columnheader" aria-sort="none" tabindex="0">2025</th>
+            <th data-k="Total_2022_2025" role="columnheader" aria-sort="descending" tabindex="0">total 22-25</th>
           </tr>
         </thead>
         <tbody></tbody>
       </table>
-      <p class="note">click headers to sort. totals update with filters and projection.</p>
+      <p class="note">click headers to sort. totals update with filters.</p>
     </div>
 
-    <p class="note">tip: switch projection to average or auto for a full-year read on 2025</p>
   </div>
 
   <script>
     const raw = [
-      { DebtorName:"S.I.N. Schroef Injectie Nederland B.V.", Tonnage_2022:1188, Tonnage_2023:871, Tonnage_2024:1193, Tonnage_2025:795, TotalTonnage_AllYears:4046 },
-      { DebtorName:"De Waalpaal B.V.", Tonnage_2022:634, Tonnage_2023:398, Tonnage_2024:949, Tonnage_2025:645, TotalTonnage_AllYears:2624 },
-      { DebtorName:"Ras Heiwerken B.V.", Tonnage_2022:103, Tonnage_2023:483, Tonnage_2024:771, Tonnage_2025:574, TotalTonnage_AllYears:1930 },
+      { DebtorName:"S.I.N. Schroef Injectie Nederland B.V.", Tonnage_2022:1188, Tonnage_2023:871, Tonnage_2024:1193, Tonnage_2025:872, TotalTonnage_AllYears:4122 },
+      { DebtorName:"De Waalpaal B.V.", Tonnage_2022:634, Tonnage_2023:398, Tonnage_2024:949, Tonnage_2025:754, TotalTonnage_AllYears:2733 },
+      { DebtorName:"Ras Heiwerken B.V.", Tonnage_2022:103, Tonnage_2023:483, Tonnage_2024:771, Tonnage_2025:689, TotalTonnage_AllYears:2045 },
       { DebtorName:"Veldstaal Steel Trade b.v.", Tonnage_2022:499, Tonnage_2023:473, Tonnage_2024:242, Tonnage_2025:106, TotalTonnage_AllYears:1320 },
-      { DebtorName:"Verhoef Funderingstechnieken BV", Tonnage_2022:184, Tonnage_2023:185, Tonnage_2024:102, Tonnage_2025:84, TotalTonnage_AllYears:553 },
-      { DebtorName:"De Waal Solid Foundations NV.", Tonnage_2022:0, Tonnage_2023:36, Tonnage_2024:313, Tonnage_2025:51, TotalTonnage_AllYears:399 },
+      { DebtorName:"Verhoef Funderingstechnieken BV", Tonnage_2022:184, Tonnage_2023:185, Tonnage_2024:102, Tonnage_2025:105, TotalTonnage_AllYears:574 },
+      { DebtorName:"De Waal Solid Foundations NV.", Tonnage_2022:0, Tonnage_2023:36, Tonnage_2024:313, Tonnage_2025:54, TotalTonnage_AllYears:402 },
       { DebtorName:"Heicombinatie SPS B.V.", Tonnage_2022:0, Tonnage_2023:63, Tonnage_2024:90, Tonnage_2025:178, TotalTonnage_AllYears:329 },
       { DebtorName:"Arie de Winter en Zonen B.V.", Tonnage_2022:0, Tonnage_2023:33, Tonnage_2024:245, Tonnage_2025:44, TotalTonnage_AllYears:320 },
       { DebtorName:"BHP Funderingstechnieken B.V.", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:212, Tonnage_2025:18, TotalTonnage_AllYears:229 },
       { DebtorName:"Verhoef Verhuur B.V.", Tonnage_2022:52, Tonnage_2023:36, Tonnage_2024:74, Tonnage_2025:20, TotalTonnage_AllYears:180 },
       { DebtorName:"P. van't Wout Vijzel- en Funderingstechnieken B.V.", Tonnage_2022:58, Tonnage_2023:115, Tonnage_2024:0, Tonnage_2025:0, TotalTonnage_AllYears:172 },
-      { DebtorName:"Funderingsherstel.nl B.V.", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:42, Tonnage_2025:112, TotalTonnage_AllYears:153 },
+      { DebtorName:"Funderingsherstel.nl B.V.", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:42, Tonnage_2025:117, TotalTonnage_AllYears:159 },
       { DebtorName:"P. van 't Wout Funderingstechnieken B.V.", Tonnage_2022:0, Tonnage_2023:78, Tonnage_2024:33, Tonnage_2025:0, TotalTonnage_AllYears:111 },
       { DebtorName:"Zaanstad Funderingen B.V.", Tonnage_2022:0, Tonnage_2023:53, Tonnage_2024:53, Tonnage_2025:0, TotalTonnage_AllYears:106 },
       { DebtorName:"Funderingstechniek Noord Materieel B.V.", Tonnage_2022:44, Tonnage_2023:18, Tonnage_2024:33, Tonnage_2025:0, TotalTonnage_AllYears:94 },
       { DebtorName:"Brefu Funderingstechnieken  B.V.", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:0, Tonnage_2025:70, TotalTonnage_AllYears:70 },
+      { DebtorName:"Fundering Expertise Nederland B.V.", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:2, Tonnage_2025:62, TotalTonnage_AllYears:64 },
       { DebtorName:"Hoolwerf Heiwerken B.V.", Tonnage_2022:0, Tonnage_2023:16, Tonnage_2024:11, Tonnage_2025:37, TotalTonnage_AllYears:63 },
-      { DebtorName:"Fundering Expertise Nederland B.V.", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:2, Tonnage_2025:53, TotalTonnage_AllYears:55 },
-      { DebtorName:"Kaaij Funderingstechniek B.V.", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:0, Tonnage_2025:51, TotalTonnage_AllYears:51 },
+      { DebtorName:"Kaaij Funderingstechniek B.V.", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:0, Tonnage_2025:61, TotalTonnage_AllYears:61 },
       { DebtorName:"ZLINER s.r.o.", Tonnage_2022:24, Tonnage_2023:21, Tonnage_2024:0, Tonnage_2025:0, TotalTonnage_AllYears:45 },
       { DebtorName:"Walinco Funderingstechniek", Tonnage_2022:19, Tonnage_2023:10, Tonnage_2024:0, Tonnage_2025:0, TotalTonnage_AllYears:28 },
       { DebtorName:"Steenbergen Steel Products B.V.", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:18, Tonnage_2025:3, TotalTonnage_AllYears:20 },
@@ -181,7 +163,7 @@
       { DebtorName:"De Kok Bouwgroep B.V.", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:6, Tonnage_2025:0, TotalTonnage_AllYears:6 },
       { DebtorName:"E.D. Infra B.V.", Tonnage_2022:5, Tonnage_2023:0, Tonnage_2024:0, Tonnage_2025:0, TotalTonnage_AllYears:5 },
       { DebtorName:"Intra B.V.", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:0, Tonnage_2025:4, TotalTonnage_AllYears:4 },
-      { DebtorName:"Loonbedrijf A.R. van Krimpen", Tonnage_2022:2, Tonnage_2023:1, Tonnage_2024:0, Tonnage_2025:0, TotalTonnage_AllYears:3 },
+      { DebtorName:"Loonbedrijf A.R. van Krimpen", Tonnage_2022:2, Tonnage_2023:1, Tonnage_2024:0, Tonnage_2025:1, TotalTonnage_AllYears:3 },
       { DebtorName:"Kaaij Klussenbedrijf", Tonnage_2022:0, Tonnage_2023:2, Tonnage_2024:0, Tonnage_2025:0, TotalTonnage_AllYears:2 },
       { DebtorName:"C.V.R. NV", Tonnage_2022:0, Tonnage_2023:0, Tonnage_2024:2, Tonnage_2025:0, TotalTonnage_AllYears:2 },
       { DebtorName:"Bekkenkamp Handel en Dienstverlening", Tonnage_2022:0, Tonnage_2023:1, Tonnage_2024:0, Tonnage_2025:0, TotalTonnage_AllYears:1 },
@@ -194,30 +176,6 @@
     ];
 
     const fmt = n => n.toLocaleString('en-GB');
-
-    // Updated for Oct 31 cutoff (day 304 of the year)
-    const AUTO_SCALE = 365 / 304;
-
-    function projectionFor(row, mode) {
-      if (mode === 'none') return row.Tonnage_2025;
-
-      if (mode === 'avg') {
-        const vals = [row.Tonnage_2022, row.Tonnage_2023, row.Tonnage_2024].filter(v => v > 0);
-        if (vals.length === 0) return row.Tonnage_2025;
-        return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
-      }
-
-      if (mode === 'best') {
-        return Math.max(row.Tonnage_2022, row.Tonnage_2023, row.Tonnage_2024);
-      }
-
-      if (mode === 'auto') {
-        if (row.Tonnage_2025 === 0) return projectionFor(row, 'avg');
-        return Math.round(row.Tonnage_2025 * AUTO_SCALE);
-      }
-
-      return row.Tonnage_2025;
-    }
 
     function debounce(fn, delay) {
       let timeout;
@@ -236,62 +194,56 @@
       k23: document.getElementById('kpi2023'),
       k24: document.getElementById('kpi2024'),
       k25: document.getElementById('kpi2025'),
-      projBadge: document.getElementById('projBadge'),
       search: document.getElementById('search'),
       topn: document.getElementById('topn'),
-      projection: document.getElementById('projection'),
       tableBody: document.querySelector('#dataTable tbody'),
       tableHeaders: Array.from(document.querySelectorAll('#dataTable thead th')),
       barTopCanvas: document.getElementById('barTop'),
       barYearCanvas: document.getElementById('barYearTotals'),
     };
 
-    els.projection.value = localStorage.getItem('projectionMode') || 'none';
     els.topn.value = localStorage.getItem('topN') || '12';
 
     let barTop = null;
     let barYearTotals = null;
-    let sortState = { key: 'Total_WithProjection', dir: 'desc' };
+    let sortState = { key: 'Total_2022_2025', dir: 'desc' };
 
     function compute() {
       const q = (els.search?.value || '').trim().toLowerCase();
       const topN = Math.max(3, Math.min(50, parseInt(els.topn?.value || '12', 10)));
-      const mode = els.projection?.value || 'none';
 
       const filtered = raw
         .filter(r => !q || r.DebtorName.toLowerCase().includes(q))
         .map(r => {
-          const p25 = projectionFor(r, mode);
-          const totalYTD = r.Tonnage_2022 + r.Tonnage_2023 + r.Tonnage_2024 + r.Tonnage_2025;
-          const totalProj = r.Tonnage_2022 + r.Tonnage_2023 + r.Tonnage_2024 + p25;
-          return { ...r, Projected_2025: p25, Total_YTD: totalYTD, Total_WithProjection: totalProj };
+          const total = r.Tonnage_2022 + r.Tonnage_2023 + r.Tonnage_2024 + r.Tonnage_2025;
+          return { ...r, Total_2022_2025: total };
         });
 
       const sum2022_all = raw.reduce((s, r) => s + r.Tonnage_2022, 0);
       const sum2023_all = raw.reduce((s, r) => s + r.Tonnage_2023, 0);
       const sum2024_all = raw.reduce((s, r) => s + r.Tonnage_2024, 0);
-      const sum2025y_all = raw.reduce((s, r) => s + r.Tonnage_2025, 0);
-      const sum2025p_all = raw.reduce((s, r) => s + projectionFor(r, mode), 0);
+      const sum2025_all = raw.reduce((s, r) => s + r.Tonnage_2025, 0);
 
       els.k22.textContent = fmt(sum2022_all);
       els.k23.textContent = fmt(sum2023_all);
       els.k24.textContent = fmt(sum2024_all);
-      els.k25.textContent = mode === 'none' ? fmt(sum2025y_all) : `${fmt(sum2025p_all)} (proj)`;
-      els.projBadge.textContent = mode === 'none' ? 'projection off' : `projection: ${mode}`;
-      els.projBadge.classList.toggle('active', mode !== 'none');
+      els.k25.textContent = fmt(sum2025_all);
 
-      const top = filtered.slice().sort((a, b) => b.Total_WithProjection - a.Total_WithProjection).slice(0, topN);
+      const top = filtered.slice()
+        .sort((a, b) => b.Total_2022_2025 - a.Total_2022_2025)
+        .slice(0, topN);
+
       const labels = top.map(r => r.DebtorName);
       const d22 = top.map(r => r.Tonnage_2022);
       const d23 = top.map(r => r.Tonnage_2023);
       const d24 = top.map(r => r.Tonnage_2024);
-      const d25 = top.map(r => mode === 'none' ? r.Tonnage_2025 : r.Projected_2025);
+      const d25 = top.map(r => r.Tonnage_2025);
 
       const yearTotals = [
         { y: 2022, v: sum2022_all },
         { y: 2023, v: sum2023_all },
         { y: 2024, v: sum2024_all },
-        { y: 2025, v: mode === 'none' ? sum2025y_all : sum2025p_all },
+        { y: 2025, v: sum2025_all },
       ];
 
       const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--grid');
@@ -303,7 +255,7 @@
             { label: '2022', data: d22, backgroundColor: '#6aa6ff' },
             { label: '2023', data: d23, backgroundColor: '#4ecdc4' },
             { label: '2024', data: d24, backgroundColor: '#ff6b6b' },
-            { label: (mode === 'none' ? '2025 YTD' : '2025 proj'), data: d25, backgroundColor: '#ffd166' }
+            { label: '2025', data: d25, backgroundColor: '#ffd166' }
           ]},
           options: {
             responsive: true, maintainAspectRatio: false,
@@ -318,7 +270,6 @@
         barTop.data.datasets[0].data = d22;
         barTop.data.datasets[1].data = d23;
         barTop.data.datasets[2].data = d24;
-        barTop.data.datasets[3].label = (mode === 'none' ? '2025 YTD' : '2025 proj');
         barTop.data.datasets[3].data = d25;
         barTop.update();
       }
@@ -362,9 +313,7 @@
           <td>${fmt(r.Tonnage_2023)}</td>
           <td>${fmt(r.Tonnage_2024)}</td>
           <td>${fmt(r.Tonnage_2025)}</td>
-          <td>${els.projection?.value === 'none' ? '' : fmt(r.Projected_2025)}</td>
-          <td>${fmt(r.Total_YTD)}</td>
-          <td>${fmt(r.Total_WithProjection)}</td>
+          <td>${fmt(r.Total_2022_2025)}</td>
         </tr>`).join('');
 
       els.tableHeaders.forEach(th => {
@@ -383,7 +332,6 @@
 
     els.search.addEventListener('input', debounce(compute, 300));
     els.topn.addEventListener('input', () => { compute(); localStorage.setItem('topN', els.topn.value); });
-    els.projection.addEventListener('change', () => { compute(); localStorage.setItem('projectionMode', els.projection.value); });
 
     compute();
   </script>
