@@ -386,14 +386,16 @@ function compute() {
     barYear.update();
   }
 
-  // H1-by-year (like-for-like, weeks 1..lastWk)
+  // H1-by-year (like-for-like, weeks 1..lastWk). Prior years from weekly (only source);
+  // 2026 anchored to the debtor figure shown on the cards/table so nothing conflicts.
   el.h1wk.textContent = FC.lastWk;
   const h1labels = FC.h1ByYear.map(x => String(x.year));
   const h1data   = FC.h1ByYear.map(x => x.h1);
+  h1data[h1data.length - 1] = actual26;
   const h1colors = ['#6aa6ff','#4ecdc4','#ff6b6b','#ffd166','#c084fc'];
-  const cur  = FC.h1ByYear[FC.h1ByYear.length - 1].h1;
-  const p25  = FC.h1ByYear[FC.h1ByYear.length - 2].h1;
-  const peak = Math.max(...FC.h1ByYear.map(x => x.h1));
+  const cur  = h1data[h1data.length - 1];
+  const p25  = h1data[h1data.length - 2];
+  const peak = Math.max(...h1data);
   const vs25 = p25  ? ((cur - p25)  / p25  * 100) : null;
   const vsPk = peak ? ((cur - peak) / peak * 100) : null;
   el.h1note.textContent = 'same Jan-Jun window every year. 2026 H1 is '
