@@ -26,6 +26,13 @@
     .kpi-badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;background:#7c3aed33;color:#c084fc;border:1px solid #7c3aed55;margin-top:4px;letter-spacing:.4px;}
     .kpi-fc{margin-top:6px;font-size:11px;color:#c084fc;font-weight:600;}
     .kpi-fc span{font-weight:400;color:#9aa2bd;}
+    .switch{display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;}
+    .switch input{display:none;}
+    .switch .slider{width:34px;height:18px;border-radius:20px;background:#273048;position:relative;transition:background .15s;flex-shrink:0;}
+    .switch .slider::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#8b93a7;transition:transform .15s,background .15s;}
+    .switch input:checked + .slider{background:#7c3aed55;}
+    .switch input:checked + .slider::after{transform:translateX(16px);background:#c084fc;}
+    .switch .switch-lbl{font-size:var(--sm);color:#b7c0d9;}
     .controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0;}
     .control{background:#121623;border:1px solid #202635;border-radius:12px;padding:10px;}
     .control label{display:block;font-size:var(--sm);color:#b7c0d9;margin-bottom:6px;}
@@ -98,7 +105,10 @@
       <p class="note">stacked by year. 2026 bar is Jan-Jun actual (no forecast at debtor level).</p>
     </div>
     <div class="card">
-      <h3>year totals</h3>
+      <div class="table-header-row" style="margin-bottom:6px;">
+        <h3>year totals</h3>
+        <label class="switch"><input type="checkbox" id="fcToggle" checked /><span class="slider"></span><span class="switch-lbl">forecast</span></label>
+      </div>
       <canvas id="barYearTotals"></canvas>
       <p class="note">company-wide annual totals. 2026 = solid actual + lighter forecast remainder.</p>
       <p class="fcnote" id="fcnote"></p>
@@ -272,10 +282,12 @@ const s = {
   search:'', topN:12,
   sort:{key:'TOTAL', dir:'desc'},
   visiblePicker: new Set(['rr', 'pace25']),
+  showForecast: true,
 };
 
 // restore from localStorage
 s.topN = parseInt(localStorage.getItem('topN') || '12', 10);
+s.showForecast = localStorage.getItem('showForecast') !== 'false';
 const savedVis = JSON.parse(localStorage.getItem('visibleCols') || 'null');
 if (savedVis) s.visiblePicker = new Set(savedVis);
 
@@ -284,13 +296,14 @@ const $  = id => document.getElementById(id);
 const el = {
   k22:$('kpi2022'), k23:$('kpi2023'), k24:$('kpi2024'), k25:$('kpi2025'), k26:$('kpi2026'),
   fc26:$('fc26'), fcnote:$('fcnote'),
-  h1wk:$('h1wk'), h1note:$('h1note'),
+  h1wk:$('h1wk'), h1note:$('h1note'), fcToggle:$('fcToggle'),
   search:$('search'), topn:$('topn'),
   thead:$('tableHead'), tbody:$('tableBody'),
   barTopC:$('barTop'), barYearC:$('barYearTotals'), barH1C:$('barH1'),
 };
 
 el.topn.value = s.topN;
+el.fcToggle.checked = s.showForecast;
 document.querySelectorAll('.col-picker-item input[type=checkbox]').forEach(cb => {
   cb.checked = s.visiblePicker.has(cb.dataset.col);
 });
@@ -316,9 +329,12 @@ function compute() {
   el.k26.textContent = fmt(actual26);
 
   // forecast
+  const showFc = s.showForecast;
   const fyForecast = actual26 + FC.remainder;
   el.fc26.innerHTML = 'FY forecast ~' + fmt(fyForecast) + ' <span>(+' + fmt(FC.remainder) + ' proj)</span>';
+  el.fc26.style.display = showFc ? '' : 'none';
   el.fcnote.textContent = '2026 running at ' + Math.round(FC.factor * 100) + '% of the 2022-2025 average pace through week ' + FC.lastWk + '. Forecast scales the historical seasonal remainder by that factor.';
+  el.fcnote.style.display = showFc ? '' : 'none';
 
   // chart top N
   const topN = Math.max(3, Math.min(50, s.topN));
@@ -354,7 +370,7 @@ function compute() {
       type:'bar',
       data:{labels, datasets:[
         {label:'actual', data:yActual, backgroundColor:actualColors, stack:'y'},
-        {label:'forecast (rest of 2026)', data:yForecast, backgroundColor:'#c084fc44', borderColor:'#c084fc', borderWidth:1, stack:'y'},
+        {label:'forecast (rest of 2026)', data:yForecast, backgroundColor:'#c084fc44', borderColor:'#c084fc', borderWidth:1, stack:'y', hidden:!showFc},
       ]},
       options:{responsive:true,maintainAspectRatio:false,
         scales:{x:{stacked:true,grid:{color:gridC},ticks:{color:'#8b93a7'}},y:{stacked:true,grid:{color:gridC},ticks:{color:'#8b93a7',callback:v=>v>=1000?(v/1000)+'k':v}}},
@@ -366,6 +382,7 @@ function compute() {
     barYear.data.datasets[0].data = yActual;
     barYear.data.datasets[0].backgroundColor = actualColors;
     barYear.data.datasets[1].data = yForecast;
+    barYear.data.datasets[1].hidden = !showFc;
     barYear.update();
   }
 
@@ -456,6 +473,7 @@ document.querySelectorAll('.col-picker-item input[type=checkbox]').forEach(cb =>
 // ---- wire up controls ----
 el.search.addEventListener('input', debounce(v => { s.search = el.search.value.trim(); compute(); }, 300));
 el.topn.addEventListener('input', () => { s.topN = parseInt(el.topn.value||'12',10); localStorage.setItem('topN', s.topN); compute(); });
+el.fcToggle.addEventListener('change', () => { s.showForecast = el.fcToggle.checked; localStorage.setItem('showForecast', s.showForecast); compute(); });
 
 compute();
 </script>
