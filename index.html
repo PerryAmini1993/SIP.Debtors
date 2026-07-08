@@ -24,13 +24,12 @@
     .card.hl26{border-color:#7c3aed55;background:linear-gradient(180deg,#1a1230,#131020);}
     .kpi-value{font-size:20px;font-weight:700;white-space:nowrap;}
     .kpi-badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;background:#7c3aed33;color:#c084fc;border:1px solid #7c3aed55;margin-top:4px;letter-spacing:.4px;}
-    .controls{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:10px;margin:10px 0;}
+    .kpi-fc{margin-top:6px;font-size:11px;color:#c084fc;font-weight:600;}
+    .kpi-fc span{font-weight:400;color:#9aa2bd;}
+    .controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0;}
     .control{background:#121623;border:1px solid #202635;border-radius:12px;padding:10px;}
     .control label{display:block;font-size:var(--sm);color:#b7c0d9;margin-bottom:6px;}
     .control input,.control select{width:100%;background:#0f1320;color:var(--text);border:1px solid #273048;border-radius:10px;padding:8px;font-size:var(--md);}
-    .control select option{background:#0f1320;}
-    .proj-banner{display:flex;align-items:center;gap:8px;background:#1a1230;border:1px solid #7c3aed44;border-radius:10px;padding:8px 12px;margin-bottom:10px;font-size:var(--sm);color:#c084fc;}
-    .proj-banner .dot{width:8px;height:8px;border-radius:50%;background:#c084fc;flex-shrink:0;}
     .grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:10px;margin-top:10px;}
     canvas{background:#0f1320;border:1px solid #202635;border-radius:12px;padding:8px;max-height:400px;width:100%;}
     .table-header-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;}
@@ -44,26 +43,22 @@
     .col-picker-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;cursor:pointer;font-size:var(--sm);color:#c8cfe8;transition:background .1s;user-select:none;}
     .col-picker-item:hover{background:#1e2840;}
     .col-picker-item input[type=checkbox]{accent-color:#6aa6ff;width:14px;height:14px;cursor:pointer;flex-shrink:0;}
-    .col-picker-divider{height:1px;background:#202635;margin:4px 0;}
     .table-wrap{overflow-x:auto;}
     table{width:100%;border-collapse:collapse;background:#0f1320;border:1px solid #202635;border-radius:12px;overflow:hidden;min-width:520px;}
     thead th{position:sticky;top:0;background:#141a2a;color:#dfe6ff;font-weight:600;font-size:var(--sm);border-bottom:1px solid #202635;text-align:left;padding:8px;white-space:nowrap;user-select:none;}
     thead th.sortable{cursor:pointer;}
-    thead th[aria-sort="ascending"]::after{content:' \u2191';}
-    thead th[aria-sort="descending"]::after{content:' \u2193';}
+    thead th[aria-sort="ascending"]::after{content:' \2191';}
+    thead th[aria-sort="descending"]::after{content:' \2193';}
     thead th.cproj{color:#c084fc;}
     thead th.cstat{color:#4ecdc4;}
-    thead th.clo{color:#ffd166;}
-    thead th.chi{color:#ff897a;}
     tbody td{padding:8px;font-size:var(--sm);color:#e3e7f5;border-top:1px solid #1b2133;white-space:nowrap;}
     tbody td.cproj{color:#c084fc;}
     tbody td.cstat{color:#4ecdc4;}
-    tbody td.clo{color:#ffd166;}
-    tbody td.chi{color:#ff897a;}
     tbody td.cneg{color:#ff6b6b;}
     tbody td.cpos{color:#4ecdc4;}
     tbody tr:hover{background:#131a2e;}
     .note{margin-top:6px;color:#a7b0c8;font-size:var(--sm);}
+    .fcnote{margin-top:6px;color:#c084fc;font-size:var(--sm);}
     @media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
     @media(max-width:980px){.kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.controls{grid-template-columns:1fr 1fr;}.grid2{grid-template-columns:1fr;}}
     @media(max-width:600px){.controls{grid-template-columns:1fr;}canvas{max-height:300px;}.kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
@@ -80,7 +75,8 @@
     <div class="card hl26">
       <h3>2026</h3>
       <div id="kpi2026" class="kpi-value" style="color:#c084fc;">0</div>
-      <span id="kpi2026badge" class="kpi-badge">Q1 actual</span>
+      <span class="kpi-badge">Jan-Jun actual</span>
+      <div class="kpi-fc" id="fc26">FY forecast <span>calculating</span></div>
     </div>
   </div>
 
@@ -93,31 +89,26 @@
       <label for="topn">top N debtors in chart</label>
       <input id="topn" type="number" min="3" max="50" value="12" />
     </div>
-    <div class="control">
-      <label for="proj">2026 chart / KPI mode</label>
-      <select id="proj">
-        <option value="actual">Q1 2026 actual</option>
-        <option value="linear">FY 2026 projected (Q1 &times; 4)</option>
-        <option value="trend">FY 2026 projected (YoY trend)</option>
-      </select>
-    </div>
-  </div>
-
-  <div id="projBanner" class="proj-banner" style="display:none;">
-    <span class="dot"></span><span id="projBannerText"></span>
   </div>
 
   <div class="grid2">
     <div class="card">
       <h3>top N debtors by total tonnage</h3>
       <canvas id="barTop"></canvas>
-      <p class="note">stacked by year. 2026 bar reflects chart mode selected above.</p>
+      <p class="note">stacked by year. 2026 bar is Jan-Jun actual (no forecast at debtor level).</p>
     </div>
     <div class="card">
       <h3>year totals</h3>
       <canvas id="barYearTotals"></canvas>
-      <p class="note">company-wide annual totals. 2026 reflects chart mode.</p>
+      <p class="note">company-wide annual totals. 2026 = solid actual + lighter forecast remainder.</p>
+      <p class="fcnote" id="fcnote"></p>
     </div>
+  </div>
+
+  <div class="card" style="margin-top:10px;">
+    <h3>H1 by year (like-for-like, weeks 1&ndash;<span id="h1wk">25</span>)</h3>
+    <canvas id="barH1"></canvas>
+    <p class="note" id="h1note"></p>
   </div>
 
   <div class="card" style="margin-top:10px;">
@@ -130,16 +121,12 @@
           <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 3.5L5 6.5L8 3.5" stroke="#b7c0d9" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
         </div>
         <div class="col-picker-menu" id="colPickerMenu">
-          <div class="col-group-label">2026 projections</div>
-          <label class="col-picker-item"><input type="checkbox" data-col="q1" checked /><span>Q1 2026 actual</span></label>
-          <label class="col-picker-item"><input type="checkbox" data-col="fx4" /><span style="color:#c084fc">FY proj (Q1 &times; 4)</span></label>
-          <label class="col-picker-item"><input type="checkbox" data-col="trend" /><span style="color:#c084fc">FY proj (YoY trend)</span></label>
-          <label class="col-picker-item"><input type="checkbox" data-col="low" /><span style="color:#ffd166">Low estimate (Q1 &times; 3)</span></label>
-          <label class="col-picker-item"><input type="checkbox" data-col="high" /><span style="color:#ff897a">High estimate (Q1 &times; 5)</span></label>
-          <div class="col-picker-divider"></div>
+          <div class="col-group-label">2026 pace</div>
+          <label class="col-picker-item"><input type="checkbox" data-col="rr" checked /><span style="color:#c084fc">2026 run-rate (H1 annualized)</span></label>
+          <label class="col-picker-item"><input type="checkbox" data-col="pace25" checked /><span style="color:#4ecdc4">pace vs 2025 full year</span></label>
+          <div style="height:1px;background:#202635;margin:4px 0;"></div>
           <div class="col-group-label">year-on-year stats</div>
           <label class="col-picker-item"><input type="checkbox" data-col="yoy2425" /><span style="color:#4ecdc4">YoY growth 2024 &rarr; 2025</span></label>
-          <label class="col-picker-item"><input type="checkbox" data-col="yoy2526" /><span style="color:#4ecdc4">YoY growth 2025 &rarr; 2026 est</span></label>
           <label class="col-picker-item"><input type="checkbox" data-col="avg3yr" /><span style="color:#4ecdc4">3yr avg (2023-2025)</span></label>
         </div>
       </div>
@@ -150,82 +137,113 @@
         <tbody id="tableBody"></tbody>
       </table>
     </div>
-    <p class="note">click sortable headers to sort. use the columns button to show/hide projection and stat columns.</p>
+    <p class="note">run-rate = Jan-Jun tonnage annualized by the historical seasonal split (H1 is ~54% of the year). pace vs 2025 compares that run-rate to last year's full total. sort by pace to rank growth.</p>
   </div>
 
 </div>
 <script>
+// 2026 column = actual tonnage Jan-Jun (H1), sourced from Tonnage_H1_2026.
 const raw = [
-  {N:"S.I.N. Schroef Injectie Nederland B.V.",   T22:1188,T23:871, T24:1193,T25:872, Q1:0  },
-  {N:"De Waalpaal B.V.",                          T22:634, T23:398, T24:949, T25:754, Q1:339},
-  {N:"Ras Heiwerken B.V.",                        T22:103, T23:483, T24:771, T25:689, Q1:156},
-  {N:"Veldstaal Steel Trade b.v.",                T22:499, T23:473, T24:242, T25:106, Q1:0  },
-  {N:"Verhoef Funderingstechnieken BV",           T22:184, T23:185, T24:102, T25:105, Q1:48 },
-  {N:"De Waal Solid Foundations NV.",             T22:0,   T23:36,  T24:313, T25:54,  Q1:62 },
-  {N:"Heicombinatie SPS B.V.",                    T22:0,   T23:63,  T24:90,  T25:178, Q1:8  },
-  {N:"Arie de Winter en Zonen B.V.",              T22:0,   T23:33,  T24:245, T25:44,  Q1:0  },
-  {N:"BHP Funderingstechnieken B.V.",             T22:0,   T23:0,   T24:212, T25:18,  Q1:18 },
-  {N:"Verhoef Verhuur B.V.",                      T22:52,  T23:36,  T24:74,  T25:20,  Q1:24 },
-  {N:"P. van't Wout Vijzel- en Funderingstechnieken B.V.", T22:58, T23:115, T24:0, T25:0, Q1:0},
-  {N:"Funderingsherstel.nl B.V.",                 T22:0,   T23:0,   T24:42,  T25:117, Q1:0  },
-  {N:"P. van 't Wout Funderingstechnieken B.V.",  T22:0,   T23:78,  T24:33,  T25:0,   Q1:0  },
-  {N:"Zaanstad Funderingen B.V.",                 T22:0,   T23:53,  T24:53,  T25:0,   Q1:0  },
-  {N:"Funderingstechniek Noord Materieel B.V.",   T22:44,  T23:18,  T24:33,  T25:0,   Q1:0  },
-  {N:"Brefu Funderingstechnieken B.V.",           T22:0,   T23:0,   T24:0,   T25:70,  Q1:0  },
-  {N:"Fundering Expertise Nederland B.V.",        T22:0,   T23:0,   T24:2,   T25:62,  Q1:17 },
-  {N:"Hoolwerf Heiwerken B.V.",                   T22:0,   T23:16,  T24:11,  T25:37,  Q1:0  },
-  {N:"Kaaij Funderingstechniek B.V.",             T22:0,   T23:0,   T24:0,   T25:61,  Q1:2  },
-  {N:"ZLINER s.r.o.",                             T22:24,  T23:21,  T24:0,   T25:0,   Q1:0  },
-  {N:"Walinco Funderingstechniek",                T22:19,  T23:10,  T24:0,   T25:0,   Q1:0  },
-  {N:"Steenbergen Steel Products B.V.",           T22:0,   T23:0,   T24:18,  T25:3,   Q1:0  },
-  {N:"VOTQUENNE FOUNDATIONS SA",                  T22:0,   T23:0,   T24:0,   T25:18,  Q1:0  },
-  {N:'UAB "Kiruna"',                              T22:13,  T23:0,   T24:0,   T25:0,   Q1:0  },
-  {N:"BAM Infra B.V.",                            T22:0,   T23:13,  T24:0,   T25:0,   Q1:0  },
-  {N:"P. Vermeulen Heiwerken B.V.",               T22:0,   T23:11,  T24:0,   T25:0,   Q1:0  },
-  {N:"Walinco Grondtechnieken B.V.",              T22:0,   T23:0,   T24:3,   T25:5,   Q1:6  },
-  {N:"KMA Realisatie",                            T22:0,   T23:0,   T24:0,   T25:6,   Q1:0  },
-  {N:"De Kok Bouwgroep B.V.",                     T22:0,   T23:0,   T24:6,   T25:0,   Q1:0  },
-  {N:"E.D. Infra B.V.",                           T22:5,   T23:0,   T24:0,   T25:0,   Q1:0  },
-  {N:"Intra B.V.",                                T22:0,   T23:0,   T24:0,   T25:4,   Q1:0  },
-  {N:"Loonbedrijf A.R. van Krimpen",              T22:2,   T23:1,   T24:0,   T25:1,   Q1:0  },
-  {N:"Kaaij Klussenbedrijf",                      T22:0,   T23:2,   T24:0,   T25:0,   Q1:0  },
-  {N:"C.V.R. NV",                                 T22:0,   T23:0,   T24:2,   T25:0,   Q1:0  },
-  {N:"Bekkenkamp Handel en Dienstverlening",      T22:0,   T23:1,   T24:0,   T25:0,   Q1:0  },
-  {N:"A. den Dekker & Zn. BV",                   T22:0,   T23:1,   T24:0,   T25:0,   Q1:0  },
-  {N:"Aannemingsbedrijf Klarenbeek B.V.",         T22:0,   T23:0,   T24:0,   T25:1,   Q1:0  },
-  {N:"Flux PBC",                                  T22:1,   T23:0,   T24:0,   T25:0,   Q1:0  },
-  {N:"MECHANICS.BE",                              T22:0,   T23:0,   T24:0,   T25:1,   Q1:0  },
-  {N:"'T LAS-ATELJ\u00c9 - CONSTRUCTION & SERVICE", T22:0, T23:0, T24:0, T25:1, Q1:0 },
-  {N:"Van Krimpen Constructiewerken",             T22:0,   T23:0,   T24:0,   T25:1,   Q1:0  },
-  {N:"Hakkers Funderingstechniek B.V.",           T22:0,   T23:0,   T24:0,   T25:0,   Q1:97 },
-  {N:"den Hartog dienstverlening",                T22:0,   T23:0,   T24:0,   T25:0,   Q1:1  },
+  {N:"S.I.N. Schroef Injectie Nederland B.V.",   T22:1188,T23:871, T24:1193,T25:872, Y26:0  },
+  {N:"De Waalpaal B.V.",                          T22:634, T23:398, T24:949, T25:754, Y26:471},
+  {N:"Ras Heiwerken B.V.",                        T22:103, T23:483, T24:771, T25:689, Y26:540},
+  {N:"Veldstaal Steel Trade b.v.",                T22:499, T23:473, T24:242, T25:106, Y26:0  },
+  {N:"Verhoef Funderingstechnieken BV",           T22:184, T23:185, T24:102, T25:105, Y26:48 },
+  {N:"De Waal Solid Foundations NV.",             T22:0,   T23:36,  T24:313, T25:54,  Y26:105},
+  {N:"Heicombinatie SPS B.V.",                    T22:0,   T23:63,  T24:90,  T25:178, Y26:12 },
+  {N:"Arie de Winter en Zonen B.V.",              T22:0,   T23:33,  T24:245, T25:44,  Y26:0  },
+  {N:"BHP Funderingstechnieken B.V.",             T22:0,   T23:0,   T24:212, T25:18,  Y26:18 },
+  {N:"Verhoef Verhuur B.V.",                      T22:52,  T23:36,  T24:74,  T25:20,  Y26:24 },
+  {N:"P. van't Wout Vijzel- en Funderingstechnieken B.V.", T22:58, T23:115, T24:0, T25:0, Y26:0},
+  {N:"Funderingsherstel.nl B.V.",                 T22:0,   T23:0,   T24:42,  T25:117, Y26:8  },
+  {N:"P. van 't Wout Funderingstechnieken B.V.",  T22:0,   T23:78,  T24:33,  T25:0,   Y26:0  },
+  {N:"Zaanstad Funderingen B.V.",                 T22:0,   T23:53,  T24:53,  T25:0,   Y26:0  },
+  {N:"Funderingstechniek Noord Materieel B.V.",   T22:44,  T23:18,  T24:33,  T25:0,   Y26:0  },
+  {N:"Brefu Funderingstechnieken B.V.",           T22:0,   T23:0,   T24:0,   T25:70,  Y26:2  },
+  {N:"Fundering Expertise Nederland B.V.",        T22:0,   T23:0,   T24:2,   T25:62,  Y26:17 },
+  {N:"Hoolwerf Heiwerken B.V.",                   T22:0,   T23:16,  T24:11,  T25:37,  Y26:0  },
+  {N:"Kaaij Funderingstechniek B.V.",             T22:0,   T23:0,   T24:0,   T25:61,  Y26:2  },
+  {N:"ZLINER s.r.o.",                             T22:24,  T23:21,  T24:0,   T25:0,   Y26:0  },
+  {N:"Walinco Funderingstechniek",                T22:19,  T23:10,  T24:0,   T25:0,   Y26:0  },
+  {N:"Steenbergen Steel Products B.V.",           T22:0,   T23:0,   T24:18,  T25:3,   Y26:0  },
+  {N:"VOTQUENNE FOUNDATIONS SA",                  T22:0,   T23:0,   T24:0,   T25:18,  Y26:0  },
+  {N:'UAB "Kiruna"',                              T22:13,  T23:0,   T24:0,   T25:0,   Y26:0  },
+  {N:"BAM Infra B.V.",                            T22:0,   T23:13,  T24:0,   T25:0,   Y26:0  },
+  {N:"P. Vermeulen Heiwerken B.V.",               T22:0,   T23:11,  T24:0,   T25:0,   Y26:0  },
+  {N:"Walinco Grondtechnieken B.V.",              T22:0,   T23:0,   T24:3,   T25:5,   Y26:16 },
+  {N:"KMA Realisatie",                            T22:0,   T23:0,   T24:0,   T25:6,   Y26:0  },
+  {N:"De Kok Bouwgroep B.V.",                     T22:0,   T23:0,   T24:6,   T25:0,   Y26:0  },
+  {N:"E.D. Infra B.V.",                           T22:5,   T23:0,   T24:0,   T25:0,   Y26:0  },
+  {N:"Intra B.V.",                                T22:0,   T23:0,   T24:0,   T25:4,   Y26:0  },
+  {N:"Loonbedrijf A.R. van Krimpen",              T22:2,   T23:1,   T24:0,   T25:1,   Y26:0  },
+  {N:"Kaaij Klussenbedrijf",                      T22:0,   T23:2,   T24:0,   T25:0,   Y26:0  },
+  {N:"C.V.R. NV",                                 T22:0,   T23:0,   T24:2,   T25:0,   Y26:0  },
+  {N:"Bekkenkamp Handel en Dienstverlening",      T22:0,   T23:1,   T24:0,   T25:0,   Y26:0  },
+  {N:"A. den Dekker & Zn. BV",                   T22:0,   T23:1,   T24:0,   T25:0,   Y26:0  },
+  {N:"Aannemingsbedrijf Klarenbeek B.V.",         T22:0,   T23:0,   T24:0,   T25:1,   Y26:0  },
+  {N:"Flux PBC",                                  T22:1,   T23:0,   T24:0,   T25:0,   Y26:0  },
+  {N:"MECHANICS.BE",                              T22:0,   T23:0,   T24:0,   T25:1,   Y26:0  },
+  {N:"'T LAS-ATELJ\u00c9 - CONSTRUCTION & SERVICE", T22:0, T23:0, T24:0, T25:1, Y26:0 },
+  {N:"Van Krimpen Constructiewerken",             T22:0,   T23:0,   T24:0,   T25:1,   Y26:0  },
+  {N:"Hakkers Funderingstechniek B.V.",           T22:0,   T23:0,   T24:0,   T25:0,   Y26:97 },
+  {N:"den Hartog dienstverlening",                T22:0,   T23:0,   T24:0,   T25:0,   Y26:1  },
 ];
+
+// ---- company-level weekly tonnage per year (ISO week). Missing week = no orders. ----
+const weekly = {
+  2022:{1:32,2:40,3:29,4:61,5:31,6:44,7:12,8:182,9:56,10:69,11:35,12:63,13:21,15:113,16:84,17:46,18:94,19:74,20:62,21:72,22:65,23:82,24:90,25:99,26:57,27:135,28:57,29:144,30:17,31:11,32:13,34:44,35:89,37:56,38:70,39:120,40:71,41:118,42:40,43:19,44:75,45:2,46:30,47:4,48:6,49:41,50:34,51:32},
+  2023:{1:45,2:26,3:105,4:65,5:76,6:138,7:30,8:92,9:39,10:64,11:8,12:104,13:4,14:61,15:16,16:76,18:97,19:78,20:109,21:32,22:12,23:83,24:1,25:109,26:63,27:55,28:110,29:10,30:28,32:7,33:63,34:14,35:53,36:66,37:4,38:68,39:88,40:42,41:110,42:80,43:10,44:52,45:32,46:133,47:103,48:170,49:4,50:99},
+  2024:{1:52,2:107,3:74,4:129,5:12,6:111,7:101,8:6,9:145,10:13,11:142,12:155,13:179,14:39,15:95,16:47,17:89,18:66,19:185,20:216,21:55,22:86,23:63,24:69,25:119,26:39,27:79,28:12,29:94,30:159,31:168,32:31,34:46,35:264,36:132,37:88,38:42,39:57,40:55,41:66,42:85,43:40,44:127,45:80,46:71,47:69,48:63,49:62,50:95,51:32},
+  2025:{2:72,3:107,4:88,5:74,6:122,7:55,8:142,9:2,10:100,11:67,12:41,13:68,14:50,15:73,16:116,17:96,18:68,19:32,20:59,21:84,22:22,23:56,24:75,25:210,26:82,27:39,28:114,29:52,30:9,33:17,34:5,35:167,36:48,37:10,38:62,39:20,40:36,41:64,42:40,43:82,44:160,45:36,46:35,47:84,48:35,49:79,50:57,51:26},
+  2026:{2:112,3:90,4:47,5:138,6:9,7:32,8:63,9:99,10:30,11:15,12:20,13:125,15:85,17:88,18:55,19:81,20:32,21:68,22:31,23:78,24:7,25:61},
+};
+
+// ---- 2026 full-year forecast: seasonal growth-factor method ----
+// factor = current YTD cumulative / average prior-year cumulative over the same completed weeks.
+// remaining weeks projected as (average of prior years for that week) x factor, then summed.
+const FC_CUR = 2026;
+const FC_PRIOR = [2022, 2023, 2024, 2025];
+const FC_MAXWK = 53;
+function computeForecast() {
+  const wsum = (y, lo, hi) => {
+    const wy = weekly[y] || {};
+    let t = 0;
+    for (let w = lo; w <= hi; w++) t += wy[w] || 0;
+    return t;
+  };
+  const curWeeks = Object.keys(weekly[FC_CUR] || {}).map(Number);
+  const lastWk = curWeeks.length ? Math.max(...curWeeks) : 0;
+  const ytd = wsum(FC_CUR, 1, lastWk);
+  const priorCumAvg = FC_PRIOR.reduce((a, y) => a + wsum(y, 1, lastWk), 0) / FC_PRIOR.length;
+  const factor = priorCumAvg > 0 ? ytd / priorCumAvg : 1;
+  let remainder = 0;
+  for (let w = lastWk + 1; w <= FC_MAXWK; w++) {
+    const avgWk = FC_PRIOR.reduce((a, y) => a + ((weekly[y] || {})[w] || 0), 0) / FC_PRIOR.length;
+    remainder += avgWk * factor;
+  }
+  // seasonal annualization multiplier: full-year avg / completed-weeks avg.
+  // used per-debtor to extrapolate their H1 to a full-year run-rate.
+  const priorFullAvg = FC_PRIOR.reduce((a, y) => a + wsum(y, 1, FC_MAXWK), 0) / FC_PRIOR.length;
+  const rrMult = priorCumAvg > 0 ? priorFullAvg / priorCumAvg : 2;
+  // like-for-like H1 (weeks 1..lastWk) for every year, for the comparison chart
+  const h1ByYear = [...FC_PRIOR, FC_CUR].map(y => ({ year: y, h1: wsum(y, 1, lastWk) }));
+  return { lastWk, ytd, priorCumAvg, factor, remainder: Math.round(remainder), rrMult, h1ByYear };
+}
+const FC = computeForecast();
 
 // ---- enrich ----
 function enrich(r) {
-  const trend = Math.round(Math.max(r.Q1, (r.T25 + (r.T25 - r.T24)) < 0 ? 0 : r.T25 + (r.T25 - r.T24)));
   const yoy2425 = r.T24 === 0 ? null : (r.T25 - r.T24) / r.T24 * 100;
-  const fy4 = r.Q1 * 4;
-  const yoy2526 = r.T25 === 0 ? null : (fy4 - r.T25) / r.T25 * 100;
+  const RR = Math.round(r.Y26 * FC.rrMult);
+  const pace2025 = r.T25 === 0 ? (r.Y26 > 0 ? null : null) : (RR - r.T25) / r.T25 * 100;
   return {
     ...r,
-    FX4: fy4,
-    TREND: trend,
-    LOW: r.Q1 * 3,
-    HIGH: r.Q1 * 5,
+    RR: RR,
+    PACE2025: pace2025,
     YOY2425: yoy2425,
-    YOY2526: yoy2526,
     AVG3YR: Math.round((r.T23 + r.T24 + r.T25) / 3),
-    TOTAL: r.T22 + r.T23 + r.T24 + r.T25 + r.Q1,
+    TOTAL: r.T22 + r.T23 + r.T24 + r.T25 + r.Y26,
   };
-}
-
-// chart/KPI 2026 value
-function chart26(r, mode) {
-  if (mode === 'actual') return r.Q1;
-  if (mode === 'linear') return r.FX4;
-  if (mode === 'trend')  return r.TREND;
-  return r.Q1;
 }
 
 const fmt    = n => Math.round(n).toLocaleString('en-GB');
@@ -235,62 +253,49 @@ const esc    = s => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;',
 function debounce(fn, d) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), d); }; }
 
 // ---- column definitions ----
-// sortKey is the enriched property to sort on; cls for coloring; pct=true for percentage rendering
 const ALL_COLS = [
   {id:'name',    label:'debtor',            sortKey:'N',       cls:'',      sortable:true,  pct:false, fixed:true},
   {id:'t22',     label:'2022',              sortKey:'T22',     cls:'',      sortable:true,  pct:false, fixed:true},
   {id:'t23',     label:'2023',              sortKey:'T23',     cls:'',      sortable:true,  pct:false, fixed:true},
   {id:'t24',     label:'2024',              sortKey:'T24',     cls:'',      sortable:true,  pct:false, fixed:true},
   {id:'t25',     label:'2025',              sortKey:'T25',     cls:'',      sortable:true,  pct:false, fixed:true},
-  {id:'q1',      label:'Q1 2026',           sortKey:'Q1',      cls:'cproj', sortable:true,  pct:false, fixed:false},
-  {id:'fx4',     label:'FY proj \u00d74',   sortKey:'FX4',     cls:'cproj', sortable:true,  pct:false, fixed:false},
-  {id:'trend',   label:'FY proj trend',     sortKey:'TREND',   cls:'cproj', sortable:true,  pct:false, fixed:false},
-  {id:'low',     label:'Low (Q1\u00d73)',   sortKey:'LOW',     cls:'clo',   sortable:true,  pct:false, fixed:false},
-  {id:'high',    label:'High (Q1\u00d75)',  sortKey:'HIGH',    cls:'chi',   sortable:true,  pct:false, fixed:false},
+  {id:'y26',     label:'2026 (Jan\u2013Jun)',sortKey:'Y26',    cls:'cproj', sortable:true,  pct:false, fixed:true},
+  {id:'rr',      label:'2026 run-rate',     sortKey:'RR',      cls:'cproj', sortable:true,  pct:false, fixed:false},
+  {id:'pace25',  label:'pace vs 2025',      sortKey:'PACE2025',cls:'cstat', sortable:false, pct:true,  fixed:false},
   {id:'yoy2425', label:'YoY 24\u219225',    sortKey:'YOY2425', cls:'cstat', sortable:false, pct:true,  fixed:false},
-  {id:'yoy2526', label:'YoY 25\u219226 est',sortKey:'YOY2526', cls:'cstat', sortable:false, pct:true,  fixed:false},
   {id:'avg3yr',  label:'3yr avg 23-25',     sortKey:'AVG3YR',  cls:'cstat', sortable:true,  pct:false, fixed:false},
   {id:'total',   label:'total',             sortKey:'TOTAL',   cls:'',      sortable:true,  pct:false, fixed:true},
 ];
 
-const PROJ_LABELS = {
-  actual:'Q1 2026 actual (Jan-Mar). Full year in progress.',
-  linear:'FY 2026 projected: Q1 \u00d7 4, assuming even quarterly distribution.',
-  trend: 'FY 2026 projected: 2025 + 2024\u21922025 delta per debtor (min: Q1 actual).',
-};
-const PROJ_BADGE = {actual:'Q1 actual', linear:'FY proj \u00d74', trend:'FY proj trend'};
-
 // ---- state ----
 const s = {
-  search:'', topN:12, projMode:'actual',
+  search:'', topN:12,
   sort:{key:'TOTAL', dir:'desc'},
-  visiblePicker: new Set(['q1']),
+  visiblePicker: new Set(['rr', 'pace25']),
 };
 
 // restore from localStorage
-s.topN      = parseInt(localStorage.getItem('topN')    || '12', 10);
-s.projMode  = localStorage.getItem('projMode') || 'actual';
+s.topN = parseInt(localStorage.getItem('topN') || '12', 10);
 const savedVis = JSON.parse(localStorage.getItem('visibleCols') || 'null');
 if (savedVis) s.visiblePicker = new Set(savedVis);
 
 // dom refs
 const $  = id => document.getElementById(id);
 const el = {
-  k22:$('kpi2022'), k23:$('kpi2023'), k24:$('kpi2024'), k25:$('kpi2025'),
-  k26:$('kpi2026'), badge:$('kpi2026badge'),
-  search:$('search'), topn:$('topn'), proj:$('proj'),
-  banner:$('projBanner'), bannerTxt:$('projBannerText'),
+  k22:$('kpi2022'), k23:$('kpi2023'), k24:$('kpi2024'), k25:$('kpi2025'), k26:$('kpi2026'),
+  fc26:$('fc26'), fcnote:$('fcnote'),
+  h1wk:$('h1wk'), h1note:$('h1note'),
+  search:$('search'), topn:$('topn'),
   thead:$('tableHead'), tbody:$('tableBody'),
-  barTopC:$('barTop'), barYearC:$('barYearTotals'),
+  barTopC:$('barTop'), barYearC:$('barYearTotals'), barH1C:$('barH1'),
 };
 
 el.topn.value = s.topN;
-el.proj.value = s.projMode;
 document.querySelectorAll('.col-picker-item input[type=checkbox]').forEach(cb => {
   cb.checked = s.visiblePicker.has(cb.dataset.col);
 });
 
-let barTop = null, barYear = null;
+let barTop = null, barYear = null, barH1 = null;
 
 function getColList() {
   return ALL_COLS.filter(c => c.fixed || s.visiblePicker.has(c.id));
@@ -300,7 +305,6 @@ function compute() {
   const enriched = raw.map(enrich);
   const q = s.search.toLowerCase();
   const filtered = enriched.filter(r => !q || r.N.toLowerCase().includes(q));
-  const mode = s.projMode;
 
   // KPIs
   const sm = k => enriched.reduce((a,r) => a + (r[k]||0), 0);
@@ -308,12 +312,13 @@ function compute() {
   el.k23.textContent = fmt(sm('T23'));
   el.k24.textContent = fmt(sm('T24'));
   el.k25.textContent = fmt(sm('T25'));
-  const sum26 = enriched.reduce((a,r) => a + chart26(r, mode), 0);
-  el.k26.textContent = fmt(sum26);
-  el.badge.textContent = PROJ_BADGE[mode];
+  const actual26 = sm('Y26');
+  el.k26.textContent = fmt(actual26);
 
-  el.banner.style.display = mode !== 'actual' ? 'flex' : 'none';
-  el.bannerTxt.textContent = PROJ_LABELS[mode];
+  // forecast
+  const fyForecast = actual26 + FC.remainder;
+  el.fc26.innerHTML = 'FY forecast ~' + fmt(fyForecast) + ' <span>(+' + fmt(FC.remainder) + ' proj)</span>';
+  el.fcnote.textContent = '2026 running at ' + Math.round(FC.factor * 100) + '% of the 2022-2025 average pace through week ' + FC.lastWk + '. Forecast scales the historical seasonal remainder by that factor.';
 
   // chart top N
   const topN = Math.max(3, Math.min(50, s.topN));
@@ -324,7 +329,7 @@ function compute() {
     {label:'2023', data:top.map(r=>r.T23), backgroundColor:'#4ecdc4'},
     {label:'2024', data:top.map(r=>r.T24), backgroundColor:'#ff6b6b'},
     {label:'2025', data:top.map(r=>r.T25), backgroundColor:'#ffd166'},
-    {label:mode==='actual'?'2026 Q1':'2026 proj', data:top.map(r=>chart26(r,mode)), backgroundColor:'#c084fc'},
+    {label:'2026 (Jan\u2013Jun)', data:top.map(r=>r.Y26), backgroundColor:'#c084fc'},
   ];
   if (!barTop) {
     barTop = new Chart(el.barTopC.getContext('2d'), {
@@ -339,25 +344,57 @@ function compute() {
     barTop.update();
   }
 
-  // year totals
-  const yd = [
-    {y:'2022',v:sm('T22'),c:'#6aa6ff'},{y:'2023',v:sm('T23'),c:'#4ecdc4'},
-    {y:'2024',v:sm('T24'),c:'#ff6b6b'},{y:'2025',v:sm('T25'),c:'#ffd166'},
-    {y:mode==='actual'?'2026 Q1':'2026 proj', v:sum26, c:'#c084fc'},
-  ];
+  // year totals: actual (all years) + forecast remainder (2026 only), stacked
+  const labels   = ['2022','2023','2024','2025','2026'];
+  const yActual   = [sm('T22'), sm('T23'), sm('T24'), sm('T25'), actual26];
+  const yForecast = [0, 0, 0, 0, FC.remainder];
+  const actualColors = ['#6aa6ff','#4ecdc4','#ff6b6b','#ffd166','#c084fc'];
   if (!barYear) {
     barYear = new Chart(el.barYearC.getContext('2d'), {
       type:'bar',
-      data:{labels:yd.map(x=>x.y),datasets:[{label:'total',data:yd.map(x=>x.v),backgroundColor:yd.map(x=>x.c)}]},
+      data:{labels, datasets:[
+        {label:'actual', data:yActual, backgroundColor:actualColors, stack:'y'},
+        {label:'forecast (rest of 2026)', data:yForecast, backgroundColor:'#c084fc44', borderColor:'#c084fc', borderWidth:1, stack:'y'},
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,
+        scales:{x:{stacked:true,grid:{color:gridC},ticks:{color:'#8b93a7'}},y:{stacked:true,grid:{color:gridC},ticks:{color:'#8b93a7',callback:v=>v>=1000?(v/1000)+'k':v}}},
+        plugins:{legend:{position:'bottom',labels:{color:'#b7c0d9',boxWidth:12,padding:8,
+          filter:it=>it.text!=='actual'}}}}
+    });
+  } else {
+    barYear.data.labels = labels;
+    barYear.data.datasets[0].data = yActual;
+    barYear.data.datasets[0].backgroundColor = actualColors;
+    barYear.data.datasets[1].data = yForecast;
+    barYear.update();
+  }
+
+  // H1-by-year (like-for-like, weeks 1..lastWk)
+  el.h1wk.textContent = FC.lastWk;
+  const h1labels = FC.h1ByYear.map(x => String(x.year));
+  const h1data   = FC.h1ByYear.map(x => x.h1);
+  const h1colors = ['#6aa6ff','#4ecdc4','#ff6b6b','#ffd166','#c084fc'];
+  const cur  = FC.h1ByYear[FC.h1ByYear.length - 1].h1;
+  const p25  = FC.h1ByYear[FC.h1ByYear.length - 2].h1;
+  const peak = Math.max(...FC.h1ByYear.map(x => x.h1));
+  const vs25 = p25  ? ((cur - p25)  / p25  * 100) : null;
+  const vsPk = peak ? ((cur - peak) / peak * 100) : null;
+  el.h1note.textContent = 'same Jan-Jun window every year. 2026 H1 is '
+    + (vs25 === null ? '-' : (vs25 >= 0 ? '+' : '') + vs25.toFixed(0) + '% vs 2025')
+    + (vsPk === null || peak === cur ? '' : ' and ' + vsPk.toFixed(0) + '% vs the 2024 peak') + '.';
+  if (!barH1) {
+    barH1 = new Chart(el.barH1C.getContext('2d'), {
+      type:'bar',
+      data:{labels:h1labels, datasets:[{label:'H1 tonnage', data:h1data, backgroundColor:h1colors}]},
       options:{responsive:true,maintainAspectRatio:false,
         scales:{x:{grid:{color:gridC},ticks:{color:'#8b93a7'}},y:{grid:{color:gridC},ticks:{color:'#8b93a7',callback:v=>v>=1000?(v/1000)+'k':v}}},
         plugins:{legend:{display:false}}}
     });
   } else {
-    barYear.data.labels = yd.map(x=>x.y);
-    barYear.data.datasets[0].data = yd.map(x=>x.v);
-    barYear.data.datasets[0].backgroundColor = yd.map(x=>x.c);
-    barYear.update();
+    barH1.data.labels = h1labels;
+    barH1.data.datasets[0].data = h1data;
+    barH1.data.datasets[0].backgroundColor = h1colors;
+    barH1.update();
   }
 
   renderTable(filtered);
@@ -419,7 +456,6 @@ document.querySelectorAll('.col-picker-item input[type=checkbox]').forEach(cb =>
 // ---- wire up controls ----
 el.search.addEventListener('input', debounce(v => { s.search = el.search.value.trim(); compute(); }, 300));
 el.topn.addEventListener('input', () => { s.topN = parseInt(el.topn.value||'12',10); localStorage.setItem('topN', s.topN); compute(); });
-el.proj.addEventListener('change', () => { s.projMode = el.proj.value; localStorage.setItem('projMode', s.projMode); compute(); });
 
 compute();
 </script>
