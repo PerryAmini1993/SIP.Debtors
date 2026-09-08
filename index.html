@@ -115,10 +115,17 @@
     </div>
   </div>
 
-  <div class="card" style="margin-top:10px;">
-    <h3>YTD by year (like-for-like, weeks 1&ndash;<span id="h1wk">37</span>)</h3>
-    <canvas id="barH1"></canvas>
-    <p class="note" id="h1note"></p>
+  <div class="grid2">
+    <div class="card">
+      <h3>YTD by year (like-for-like, weeks 1&ndash;<span id="h1wk">37</span>)</h3>
+      <canvas id="barH1"></canvas>
+      <p class="note" id="h1note"></p>
+    </div>
+    <div class="card">
+      <h3>2026 YTD tonnage by customer</h3>
+      <canvas id="donutCustomer"></canvas>
+      <p class="note" id="concentrationNote"></p>
+    </div>
   </div>
 
   <div class="card" style="margin-top:10px;">
@@ -300,6 +307,7 @@ const el = {
   search:$('search'), topn:$('topn'),
   thead:$('tableHead'), tbody:$('tableBody'),
   barTopC:$('barTop'), barYearC:$('barYearTotals'), barH1C:$('barH1'),
+  donutCustomerC:$('donutCustomer'), concentrationNote:$('concentrationNote'),
 };
 
 el.topn.value = s.topN;
@@ -308,7 +316,30 @@ document.querySelectorAll('.col-picker-item input[type=checkbox]').forEach(cb =>
   cb.checked = s.visiblePicker.has(cb.dataset.col);
 });
 
-let barTop = null, barYear = null, barH1 = null;
+let barTop = null, barYear = null, barH1 = null, donutCustomer = null;
+
+const donutCenterText = {
+  id:'donutCenterText',
+  afterDraw(chart) {
+    if (chart.config.type !== 'doughnut') return;
+    const values = chart.data.datasets[0].data;
+    const total = values.reduce((a, v) => a + v, 0);
+    const topTwo = total ? (values[0] + values[1]) / total * 100 : 0;
+    const {ctx, chartArea:{left, right, top, bottom}} = chart;
+    const x = (left + right) / 2;
+    const y = (top + bottom) / 2;
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#8b93a7';
+    ctx.font = '600 12px ui-sans-serif, system-ui, sans-serif';
+    ctx.fillText('TOP 2', x, y - 12);
+    ctx.fillStyle = '#e7eaf3';
+    ctx.font = '700 24px ui-sans-serif, system-ui, sans-serif';
+    ctx.fillText(topTwo.toFixed(1) + '%', x, y + 12);
+    ctx.restore();
+  }
+};
 
 function getColList() {
   return ALL_COLS.filter(c => c.fixed || s.visiblePicker.has(c.id));
@@ -414,6 +445,40 @@ function compute() {
     barH1.data.datasets[0].data = h1data;
     barH1.data.datasets[0].backgroundColor = h1colors;
     barH1.update();
+  }
+
+  // 2026 customer concentration: four largest debtors plus all others combined.
+  const ranked26 = enriched.filter(r => r.Y26 > 0).sort((a,b) => b.Y26 - a.Y26);
+  const leaders26 = ranked26.slice(0, 4);
+  const other26 = ranked26.slice(4).reduce((a,r) => a + r.Y26, 0);
+  const donutLabels = [...leaders26.map(r => r.N), 'Other customers'];
+  const donutValues = [...leaders26.map(r => r.Y26), other26];
+  const topTwoShare = actual26 ? (donutValues[0] + donutValues[1]) / actual26 * 100 : 0;
+  el.concentrationNote.textContent = 'Ras Heiwerken and De Waalpaal account for '
+    + topTwoShare.toFixed(1) + '% of 2026 YTD tonnage.';
+  if (!donutCustomer) {
+    donutCustomer = new Chart(el.donutCustomerC.getContext('2d'), {
+      type:'doughnut',
+      data:{labels:donutLabels, datasets:[{
+        data:donutValues,
+        backgroundColor:['#c084fc','#6aa6ff','#4ecdc4','#ffd166','#3b4257'],
+        borderColor:'#0f1320', borderWidth:2, hoverOffset:5
+      }]},
+      plugins:[donutCenterText],
+      options:{responsive:true,maintainAspectRatio:false,cutout:'64%',
+        plugins:{
+          legend:{position:'bottom',labels:{color:'#b7c0d9',boxWidth:12,padding:10}},
+          tooltip:{callbacks:{label:ctx => {
+            const pct = actual26 ? ctx.raw / actual26 * 100 : 0;
+            return ' ' + ctx.label + ': ' + fmt(ctx.raw) + ' t (' + pct.toFixed(1) + '%)';
+          }}}
+        }
+      }
+    });
+  } else {
+    donutCustomer.data.labels = donutLabels;
+    donutCustomer.data.datasets[0].data = donutValues;
+    donutCustomer.update();
   }
 
   renderTable(filtered);
