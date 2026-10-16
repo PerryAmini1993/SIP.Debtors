@@ -82,7 +82,7 @@
     <div class="card hl26">
       <h3>2026</h3>
       <div id="kpi2026" class="kpi-value" style="color:#c084fc;">0</div>
-      <span class="kpi-badge">Through week 37 actual</span>
+      <span class="kpi-badge">Jan-Sep actual</span>
       <div class="kpi-fc" id="fc26">FY forecast <span>calculating</span></div>
     </div>
   </div>
@@ -102,7 +102,7 @@
     <div class="card">
       <h3>top N debtors by total tonnage</h3>
       <canvas id="barTop"></canvas>
-      <p class="note">stacked by year. 2026 bar is year-to-date actual through week 37 (no forecast at debtor level).</p>
+      <p class="note">stacked by year. 2026 bar is January-September actual (no forecast at debtor level).</p>
     </div>
     <div class="card">
       <div class="table-header-row" style="margin-bottom:6px;">
@@ -117,12 +117,12 @@
 
   <div class="grid2">
     <div class="card">
-      <h3>YTD by year (like-for-like, weeks 1&ndash;<span id="h1wk">37</span>)</h3>
+      <h3>January-September by year (like-for-like)</h3>
       <canvas id="barH1"></canvas>
       <p class="note" id="h1note"></p>
     </div>
     <div class="card">
-      <h3>2026 YTD tonnage by customer</h3>
+      <h3>2026 January-September tonnage by customer</h3>
       <canvas id="donutCustomer"></canvas>
       <p class="note" id="concentrationNote"></p>
     </div>
@@ -139,7 +139,7 @@
         </div>
         <div class="col-picker-menu" id="colPickerMenu">
           <div class="col-group-label">2026 pace</div>
-          <label class="col-picker-item"><input type="checkbox" data-col="rr" checked /><span style="color:#c084fc">2026 run-rate (YTD annualized)</span></label>
+          <label class="col-picker-item"><input type="checkbox" data-col="rr" checked /><span style="color:#c084fc">2026 run-rate (Jan-Sep annualized)</span></label>
           <label class="col-picker-item"><input type="checkbox" data-col="pace25" checked /><span style="color:#4ecdc4">pace vs 2025 full year</span></label>
           <div style="height:1px;background:#202635;margin:4px 0;"></div>
           <div class="col-group-label">year-on-year stats</div>
@@ -154,19 +154,19 @@
         <tbody id="tableBody"></tbody>
       </table>
     </div>
-    <p class="note">run-rate = 2026 YTD tonnage annualized by the historical seasonal split through week 37. pace vs 2025 compares that run-rate to last year's full total. sort by pace to rank growth.</p>
+    <p class="note">run-rate = 2026 January-September tonnage annualized using the historical January-September share of the full year. pace vs 2025 compares that run-rate to last year's full total. sort by pace to rank growth.</p>
   </div>
 
 </div>
 <script>
-// 2026 column = actual year-to-date tonnage through ISO week 37.
+// 2026 column = actual tonnage from January through September 2026.
 const raw = [
   {N:"S.I.N. Schroef Injectie Nederland B.V.",   T22:1188,T23:871, T24:1193,T25:872, Y26:0  },
-  {N:"De Waalpaal B.V.",                          T22:634, T23:398, T24:949, T25:754, Y26:513},
-  {N:"Ras Heiwerken B.V.",                        T22:103, T23:483, T24:771, T25:689, Y26:662},
+  {N:"De Waalpaal B.V.",                          T22:634, T23:398, T24:949, T25:754, Y26:530},
+  {N:"Ras Heiwerken B.V.",                        T22:103, T23:483, T24:771, T25:689, Y26:718},
   {N:"Veldstaal Steel Trade b.v.",                T22:499, T23:473, T24:242, T25:106, Y26:0  },
   {N:"Verhoef Funderingstechnieken BV",           T22:184, T23:185, T24:102, T25:105, Y26:48 },
-  {N:"De Waal Solid Foundations NV.",             T22:0,   T23:36,  T24:313, T25:54,  Y26:105},
+  {N:"De Waal Solid Foundations NV.",             T22:0,   T23:36,  T24:313, T25:54,  Y26:111},
   {N:"Heicombinatie SPS B.V.",                    T22:0,   T23:63,  T24:90,  T25:178, Y26:12 },
   {N:"Arie de Winter en Zonen B.V.",              T22:0,   T23:33,  T24:245, T25:44,  Y26:0  },
   {N:"BHP Funderingstechnieken B.V.",             T22:0,   T23:0,   T24:212, T25:18,  Y26:18 },
@@ -176,10 +176,10 @@ const raw = [
   {N:"P. van 't Wout Funderingstechnieken B.V.",  T22:0,   T23:78,  T24:33,  T25:0,   Y26:0  },
   {N:"Zaanstad Funderingen B.V.",                 T22:0,   T23:53,  T24:53,  T25:0,   Y26:0  },
   {N:"Funderingstechniek Noord Materieel B.V.",   T22:44,  T23:18,  T24:33,  T25:0,   Y26:0  },
-  {N:"Brefu Funderingstechnieken B.V.",           T22:0,   T23:0,   T24:0,   T25:70,  Y26:11 },
+  {N:"Brefu Funderingstechnieken B.V.",           T22:0,   T23:0,   T24:0,   T25:70,  Y26:18 },
   {N:"Fundering Expertise Nederland B.V.",        T22:0,   T23:0,   T24:2,   T25:62,  Y26:17 },
   {N:"Hoolwerf Heiwerken B.V.",                   T22:0,   T23:16,  T24:11,  T25:37,  Y26:5  },
-  {N:"Kaaij Funderingstechniek B.V.",             T22:0,   T23:0,   T24:0,   T25:61,  Y26:2  },
+  {N:"Kaaij Funderingstechniek B.V.",             T22:0,   T23:0,   T24:0,   T25:61,  Y26:10 },
   {N:"ZLINER s.r.o.",                             T22:24,  T23:21,  T24:0,   T25:0,   Y26:0  },
   {N:"Walinco Funderingstechniek",                T22:19,  T23:10,  T24:0,   T25:0,   Y26:0  },
   {N:"Steenbergen Steel Products B.V.",           T22:0,   T23:0,   T24:18,  T25:3,   Y26:0  },
@@ -192,6 +192,7 @@ const raw = [
   {N:"De Kok Bouwgroep B.V.",                     T22:0,   T23:0,   T24:6,   T25:0,   Y26:0  },
   {N:"E.D. Infra B.V.",                           T22:5,   T23:0,   T24:0,   T25:0,   Y26:0  },
   {N:"Intra B.V.",                                T22:0,   T23:0,   T24:0,   T25:4,   Y26:0  },
+  {N:"HTB Baugesellschaft m.b.H.",                T22:0,   T23:0,   T24:0,   T25:0,   Y26:3  },
   {N:"Loonbedrijf A.R. van Krimpen",              T22:2,   T23:1,   T24:0,   T25:1,   Y26:0  },
   {N:"Kaaij Klussenbedrijf",                      T22:0,   T23:2,   T24:0,   T25:0,   Y26:0  },
   {N:"C.V.R. NV",                                 T22:0,   T23:0,   T24:2,   T25:0,   Y26:0  },
@@ -206,45 +207,39 @@ const raw = [
   {N:"den Hartog dienstverlening",                T22:0,   T23:0,   T24:0,   T25:0,   Y26:1  },
 ];
 
-// ---- company-level weekly tonnage per year (ISO week). Missing week = no orders. ----
-const weekly = {
-  2022:{1:32,2:40,3:29,4:61,5:31,6:44,7:12,8:182,9:56,10:69,11:35,12:63,13:21,15:113,16:84,17:46,18:94,19:74,20:62,21:72,22:65,23:82,24:90,25:99,26:57,27:135,28:57,29:144,30:17,31:11,32:13,34:44,35:89,37:56,38:70,39:120,40:71,41:118,42:40,43:19,44:75,45:2,46:30,47:4,48:6,49:41,50:34,51:32},
-  2023:{1:45,2:26,3:105,4:65,5:76,6:138,7:30,8:92,9:39,10:64,11:8,12:104,13:4,14:61,15:16,16:76,18:97,19:78,20:109,21:32,22:12,23:83,24:1,25:109,26:63,27:55,28:110,29:10,30:28,32:7,33:63,34:14,35:53,36:66,37:4,38:68,39:88,40:42,41:110,42:80,43:10,44:52,45:32,46:133,47:103,48:170,49:4,50:99},
-  2024:{1:52,2:107,3:74,4:129,5:12,6:111,7:101,8:6,9:145,10:13,11:142,12:155,13:179,14:39,15:95,16:47,17:89,18:66,19:185,20:216,21:55,22:86,23:63,24:69,25:119,26:39,27:79,28:12,29:94,30:159,31:168,32:31,34:46,35:264,36:132,37:88,38:42,39:57,40:55,41:66,42:85,43:40,44:127,45:80,46:71,47:69,48:63,49:62,50:95,51:32},
-  2025:{2:72,3:107,4:88,5:74,6:122,7:55,8:142,9:2,10:100,11:67,12:41,13:68,14:50,15:73,16:116,17:96,18:68,19:32,20:59,21:84,22:22,23:56,24:75,25:210,26:82,27:39,28:114,29:52,30:9,33:17,34:5,35:167,36:48,37:10,38:62,39:20,40:36,41:64,42:40,43:82,44:160,45:36,46:35,47:84,48:35,49:79,50:57,51:26},
-  2026:{2:112,3:90,4:47,5:138,6:9,7:32,8:63,9:99,10:30,11:15,12:20,13:125,15:85,17:88,18:55,19:81,20:32,21:68,22:31,23:78,24:7,25:61,27:17,29:25,32:32,33:30,35:30,36:40,37:26},
+// ---- company-level monthly tonnage per year. Missing month = no orders. ----
+const monthly = {
+  2022:{1:192,2:267,3:213,4:241,5:342,6:337,7:364,8:155,9:245,10:247,11:111,12:111},
+  2023:{1:278,2:306,3:208,4:152,5:325,6:255,7:201,8:135,9:224,10:280,11:417,12:134},
+  2024:{1:373,2:325,3:524,4:330,5:543,6:288,7:499,8:350,9:317,10:305,11:348,12:188},
+  2025:{1:339,2:321,3:308,4:336,5:225,6:422,7:212,8:189,9:139,10:380,11:189,12:161},
+  2026:{1:385,2:202,3:189,4:228,5:212,6:145,7:42,8:91,9:163},
 };
 
-// ---- 2026 full-year forecast: seasonal growth-factor method ----
-// factor = current YTD cumulative / average prior-year cumulative over the same completed weeks.
-// remaining weeks projected as (average of prior years for that week) x factor, then summed.
+// ---- 2026 full-year forecast: calendar-quarter seasonal growth-factor method ----
+// factor = 2026 Jan-Sep / average prior-year Jan-Sep.
+// Oct-Dec = average historical Oct-Dec scaled by that factor.
 const FC_CUR = 2026;
 const FC_PRIOR = [2022, 2023, 2024, 2025];
-const FC_MAXWK = 53;
 function computeForecast() {
-  const wsum = (y, lo, hi) => {
-    const wy = weekly[y] || {};
+  const msum = (y, lo, hi) => {
+    const my = monthly[y] || {};
     let t = 0;
-    for (let w = lo; w <= hi; w++) t += wy[w] || 0;
+    for (let m = lo; m <= hi; m++) t += my[m] || 0;
     return t;
   };
-  const curWeeks = Object.keys(weekly[FC_CUR] || {}).map(Number);
-  const lastWk = curWeeks.length ? Math.max(...curWeeks) : 0;
-  const ytd = wsum(FC_CUR, 1, lastWk);
-  const priorCumAvg = FC_PRIOR.reduce((a, y) => a + wsum(y, 1, lastWk), 0) / FC_PRIOR.length;
+  const ytd = msum(FC_CUR, 1, 9);
+  const priorCumAvg = FC_PRIOR.reduce((a, y) => a + msum(y, 1, 9), 0) / FC_PRIOR.length;
   const factor = priorCumAvg > 0 ? ytd / priorCumAvg : 1;
-  let remainder = 0;
-  for (let w = lastWk + 1; w <= FC_MAXWK; w++) {
-    const avgWk = FC_PRIOR.reduce((a, y) => a + ((weekly[y] || {})[w] || 0), 0) / FC_PRIOR.length;
-    remainder += avgWk * factor;
-  }
-  // seasonal annualization multiplier: full-year avg / completed-weeks avg.
-  // used per-debtor to extrapolate their YTD actual to a full-year run-rate.
-  const priorFullAvg = FC_PRIOR.reduce((a, y) => a + wsum(y, 1, FC_MAXWK), 0) / FC_PRIOR.length;
-  const rrMult = priorCumAvg > 0 ? priorFullAvg / priorCumAvg : 2;
-  // like-for-like YTD (weeks 1..lastWk) for every year, for the comparison chart
-  const h1ByYear = [...FC_PRIOR, FC_CUR].map(y => ({ year: y, h1: wsum(y, 1, lastWk) }));
-  return { lastWk, ytd, priorCumAvg, factor, remainder: Math.round(remainder), rrMult, h1ByYear };
+  const priorRemainderAvg = FC_PRIOR.reduce((a, y) => a + msum(y, 10, 12), 0) / FC_PRIOR.length;
+  const remainder = priorRemainderAvg * factor;
+  const priorFullAvg = FC_PRIOR.reduce((a, y) => a + msum(y, 1, 12), 0) / FC_PRIOR.length;
+  const rrMult = priorCumAvg > 0 ? priorFullAvg / priorCumAvg : 4 / 3;
+  const ytdByYear = [...FC_PRIOR, FC_CUR].map(y => ({ year:y, ytd:msum(y, 1, 9) }));
+  return {
+    ytd, priorCumAvg, priorRemainderAvg, factor,
+    remainder:Math.round(remainder), rrMult, ytdByYear
+  };
 }
 const FC = computeForecast();
 
@@ -276,7 +271,7 @@ const ALL_COLS = [
   {id:'t23',     label:'2023',              sortKey:'T23',     cls:'',      sortable:true,  pct:false, fixed:true},
   {id:'t24',     label:'2024',              sortKey:'T24',     cls:'',      sortable:true,  pct:false, fixed:true},
   {id:'t25',     label:'2025',              sortKey:'T25',     cls:'',      sortable:true,  pct:false, fixed:true},
-  {id:'y26',     label:'2026 YTD (wk 37)',  sortKey:'Y26',    cls:'cproj', sortable:true,  pct:false, fixed:true},
+  {id:'y26',     label:'2026 Jan-Sep',       sortKey:'Y26',    cls:'cproj', sortable:true,  pct:false, fixed:true},
   {id:'rr',      label:'2026 run-rate',     sortKey:'RR',      cls:'cproj', sortable:true,  pct:false, fixed:false},
   {id:'pace25',  label:'pace vs 2025',      sortKey:'PACE2025',cls:'cstat', sortable:false, pct:true,  fixed:false},
   {id:'yoy2425', label:'YoY 24\u219225',    sortKey:'YOY2425', cls:'cstat', sortable:false, pct:true,  fixed:false},
@@ -303,7 +298,7 @@ const $  = id => document.getElementById(id);
 const el = {
   k22:$('kpi2022'), k23:$('kpi2023'), k24:$('kpi2024'), k25:$('kpi2025'), k26:$('kpi2026'),
   fc26:$('fc26'), fcnote:$('fcnote'),
-  h1wk:$('h1wk'), h1note:$('h1note'), fcToggle:$('fcToggle'),
+  h1note:$('h1note'), fcToggle:$('fcToggle'),
   search:$('search'), topn:$('topn'),
   thead:$('tableHead'), tbody:$('tableBody'),
   barTopC:$('barTop'), barYearC:$('barYearTotals'), barH1C:$('barH1'),
@@ -364,7 +359,7 @@ function compute() {
   const fyForecast = actual26 + FC.remainder;
   el.fc26.innerHTML = 'FY forecast ~' + fmt(fyForecast) + ' <span>(+' + fmt(FC.remainder) + ' proj)</span>';
   el.fc26.style.display = showFc ? '' : 'none';
-  el.fcnote.textContent = '2026 running at ' + Math.round(FC.factor * 100) + '% of the 2022-2025 average pace through week ' + FC.lastWk + '. Forecast scales the historical seasonal remainder by that factor.';
+  el.fcnote.textContent = '2026 January-September is ' + Math.round(FC.factor * 100) + '% of the 2022-2025 average for the same period. Forecast scales the historical October-December remainder by that factor.';
   el.fcnote.style.display = showFc ? '' : 'none';
 
   // chart top N
@@ -376,7 +371,7 @@ function compute() {
     {label:'2023', data:top.map(r=>r.T23), backgroundColor:'#4ecdc4'},
     {label:'2024', data:top.map(r=>r.T24), backgroundColor:'#ff6b6b'},
     {label:'2025', data:top.map(r=>r.T25), backgroundColor:'#ffd166'},
-    {label:'2026 YTD (wk 37)', data:top.map(r=>r.Y26), backgroundColor:'#c084fc'},
+    {label:'2026 Jan-Sep', data:top.map(r=>r.Y26), backgroundColor:'#c084fc'},
   ];
   if (!barTop) {
     barTop = new Chart(el.barTopC.getContext('2d'), {
@@ -417,11 +412,9 @@ function compute() {
     barYear.update();
   }
 
-  // YTD-by-year (like-for-like, weeks 1..lastWk). Prior years from weekly (only source);
-  // 2026 anchored to the debtor figure shown on the cards/table so nothing conflicts.
-  el.h1wk.textContent = FC.lastWk;
-  const h1labels = FC.h1ByYear.map(x => String(x.year));
-  const h1data   = FC.h1ByYear.map(x => x.h1);
+  // January-September by year. 2026 is anchored to the debtor figure shown on the cards/table.
+  const h1labels = FC.ytdByYear.map(x => String(x.year));
+  const h1data   = FC.ytdByYear.map(x => x.ytd);
   h1data[h1data.length - 1] = actual26;
   const h1colors = ['#6aa6ff','#4ecdc4','#ff6b6b','#ffd166','#c084fc'];
   const cur  = h1data[h1data.length - 1];
@@ -429,13 +422,13 @@ function compute() {
   const peak = Math.max(...h1data);
   const vs25 = p25  ? ((cur - p25)  / p25  * 100) : null;
   const vsPk = peak ? ((cur - peak) / peak * 100) : null;
-  el.h1note.textContent = 'same weeks 1-' + FC.lastWk + ' window every year. 2026 YTD is '
+  el.h1note.textContent = 'same January-September window every year. 2026 is '
     + (vs25 === null ? '-' : (vs25 >= 0 ? '+' : '') + vs25.toFixed(0) + '% vs 2025')
     + (vsPk === null || peak === cur ? '' : ' and ' + vsPk.toFixed(0) + '% vs the 2024 peak') + '.';
   if (!barH1) {
     barH1 = new Chart(el.barH1C.getContext('2d'), {
       type:'bar',
-      data:{labels:h1labels, datasets:[{label:'YTD tonnage', data:h1data, backgroundColor:h1colors}]},
+      data:{labels:h1labels, datasets:[{label:'January-September tonnage', data:h1data, backgroundColor:h1colors}]},
       options:{responsive:true,maintainAspectRatio:false,
         scales:{x:{grid:{color:gridC},ticks:{color:'#8b93a7'}},y:{grid:{color:gridC},ticks:{color:'#8b93a7',callback:v=>v>=1000?(v/1000)+'k':v}}},
         plugins:{legend:{display:false}}}
@@ -455,7 +448,7 @@ function compute() {
   const donutValues = [...leaders26.map(r => r.Y26), other26];
   const topTwoShare = actual26 ? (donutValues[0] + donutValues[1]) / actual26 * 100 : 0;
   el.concentrationNote.textContent = 'Ras Heiwerken and De Waalpaal account for '
-    + topTwoShare.toFixed(1) + '% of 2026 YTD tonnage.';
+    + topTwoShare.toFixed(1) + '% of 2026 January-September tonnage.';
   if (!donutCustomer) {
     donutCustomer = new Chart(el.donutCustomerC.getContext('2d'), {
       type:'doughnut',
